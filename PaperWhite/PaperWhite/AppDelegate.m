@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-
+#import "RootViewController.h"
 @interface AppDelegate ()
 
 @end
@@ -17,11 +17,28 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
+    RootViewController *controller = [[RootViewController alloc]init];
+    UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:controller];
+    self.window.rootViewController = nav;
+    
+    
+    //导航栏相关设置
+//    [[UINavigationBar appearance] setBarTintColor:[UIColor cyanGreenColor]];
+    [[UINavigationBar appearance] setTranslucent:NO];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc]init] forBarMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setShadowImage:[[UIImage alloc]init]];
+//    [self.navigationController.navigationBar setBackgroundImage:[[UIImage alloc]init] forBarMetrics:UIBarMetricsDefault];
+//    
+//    [self.navigationController.navigationBar setShadowImage:[[UIImage alloc]init]];
+    
+    [[UIApplication sharedApplication]setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
 }
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

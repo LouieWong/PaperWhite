@@ -7,4 +7,9 @@ pod "AFNetworking", "~> 2.0"
 
 pod 'FMDB'
 
+pod 'Masonry'
+
 pod 'JSONModel'
+
+platform :ios, '6.1'
+pod 'SDWebImage', '~>3.7'
