@@ -23,3 +23,22 @@
 
 
 @end
+/**
+ *  首页详情数据
+ **/
+@interface PianKeIndexDetailModel : JSONModel
+@property (nonatomic,copy) NSString *contentid;
+@property (nonatomic,copy) NSString *html;
+
+
+@end
+/**
+ *  分类数据
+ **/
+@interface PiankeClassifyModel : JSONModel
+@property (nonatomic,copy) NSString *name;
+@property (nonatomic,copy) NSString *enname;
+@property (nonatomic,copy) NSString *coverimg;
+@property (nonatomic) NSNumber *type;
+@end
+

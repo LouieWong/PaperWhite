@@ -38,8 +38,6 @@
 }
 - (void)post:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock {
     NSString *strUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-//    self.manager.requestSerializer = [AFHTTPRequestSerializer serializer];
-//    self.manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     [self.manager POST:strUrl parameters:paramenters success:^(AFHTTPRequestOperation *operation, id responseObject) {
        
         if (successBlock) {
@@ -51,6 +49,20 @@
         }
     }];
 }
+- (void)get:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock {
+    NSString *strUrl = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [self.manager GET:strUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        if (successBlock) {
+            successBlock(responseObject);
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        if (failedBlock) {
+            failedBlock(error);
+        }
+    }];
+}
+
 
 - (void)startNetDataEngine {
     [[AFNetworkReachabilityManager sharedManager]startMonitoring];
@@ -73,30 +85,23 @@
     }];
 }
 #pragma mark - 页面获取数据
-/**
- *  首页
- **/
-- (void)requsetIndexFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock {
-    self.failedBlock = failedBlock;
-    [self startNetDataEngine];
-    [self post:url parameters:paramenters success:successBlock failed:failedBlock];
-    
-}
-/**
- *  详情数据
- **/
-- (void)requsetIndexDetailFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock {
-    self.failedBlock = failedBlock;
-    [self startNetDataEngine];
-    [self post:url parameters:paramenters success:successBlock failed:failedBlock];
-}
-/**
-*  片刻首页
-**/
 - (void)requsetPianKeIndexFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock {
     self.failedBlock = failedBlock;
     [self startNetDataEngine];
     [self post:url parameters:paramenters success:successBlock failed:failedBlock];
+}
+- (void)requsetPianKeIndexDetailFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock
+{
+    self.failedBlock = failedBlock;
+    [self startNetDataEngine];
+    [self post:url parameters:paramenters success:successBlock failed:failedBlock];
+
+}
+- (void)requsetPianKeClassifyFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock
+{
+    self.failedBlock = failedBlock;
+    [self startNetDataEngine];
+    [self get:url parameters:paramenters success:successBlock failed:failedBlock];
 }
 
 @end

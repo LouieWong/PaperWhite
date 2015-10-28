@@ -16,5 +16,5 @@
 +(UIColor *)cyanGreenColor;
 +(UIColor *)orangeYellowColor;
 +(UIColor *)randomcolor;
-
++(UIColor *)customRedColor;
 @end

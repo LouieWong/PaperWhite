@@ -12,15 +12,15 @@
 /**
  *  解析主页故事数据
  **/
-+ (NSArray *)paseIndexStroriesData:(id)data;
-//+ (NSDictionary *)paseIndexStroriesData:(id)data;
++ (NSMutableArray *)pasePianKeListData:(id)data;
 
 /**
  *  解析详情页数据
  **/
-+ (NSDictionary *)paseIndexStroriesDetailData:(id)data;
-
-+ (NSArray *)pasePianKeListData:(id)data;
-+ (NSDictionary *)pasePianKeListDetailData:(id)data;
++ (NSMutableArray *)pasePianKeListDetailData:(id)data;
+/**
+ *  解析分类数据
+ **/
++ (NSMutableArray *)pasePianKeClassifyData:(id)data;
 
 @end

@@ -7,49 +7,45 @@
 //
 
 #import "PaseBase.h"
-#import "DayNewsModel.h"
+
 #import "PianKeMainModel.h"
 @implementation PaseBase
-/**
- *  解析主页故事数据
- **/
-//+ (NSDictionary *)paseIndexStroriesData:(id)data
-//{
-////
-//    return nil;
-//}
-+ (NSArray *)paseIndexStroriesData:(id)data
-{
-    NSArray *dataKey = [data objectForKey:@"stories"];
-    NSMutableArray *marr = [NSMutableArray array];
-    for (NSDictionary *obj in dataKey) {
-        Stories_DayNewsModel *model = [[Stories_DayNewsModel alloc]initWithDictionary:obj error:nil];
-        [marr addObject:model];
-    }
-    return marr;
-}
-+ (NSDictionary *)paseIndexStroriesDetailData:(id)data
-{
-    NSMutableDictionary *mdic = [[NSMutableDictionary alloc]init];
-    Detail_DayNewsModel *model = [[Detail_DayNewsModel alloc]initWithDictionary:data error:nil];
-    NSLog(@"%@",model);
-    [mdic addEntriesFromDictionary:data];
-    return mdic;
-}
-+ (NSArray *)pasePianKeListData:(id)data
++ (NSMutableArray *)pasePianKeListData:(id)data
 {
     NSDictionary *dict = [data objectForKey:@"data"];
     NSArray *list = [dict objectForKey:@"list"];
     NSMutableArray *marr = [NSMutableArray array];
     for (NSDictionary *obj in list) {
         PianKeMainModel *model = [[PianKeMainModel alloc]initWithDictionary:obj error:nil];
+        if (![model.name isEqualToString:@"音乐"]) {
+            if (![model.name isEqualToString:@"Ting"]) {
+                [marr addObject:model];
+            }
+
+        }
+        
+    }
+    return marr;
+}
++ (NSMutableArray *)pasePianKeListDetailData:(id)data
+{
+    NSDictionary *dict = [data objectForKey:@"data"];
+    NSMutableArray *marr = [NSMutableArray array];
+    PianKeIndexDetailModel  *model =[[PianKeIndexDetailModel alloc]initWithDictionary:dict error:nil];
+    [marr addObject:model];
+    return marr;
+    
+}
++ (NSMutableArray *)pasePianKeClassifyData:(id)data
+{
+    NSDictionary *dict = [data objectForKey:@"data"];
+    NSArray *array = [dict objectForKey:@"list"];
+    NSMutableArray *marr = [NSMutableArray array];
+    for (id obj in array) {
+        PiankeClassifyModel *model = [[PiankeClassifyModel alloc]initWithDictionary:obj error:nil];
         [marr addObject:model];
     }
     return marr;
 }
-//+ (NSDictionary *)pasePianKeListDetailData:(id)data
-//{
-//    
-//}
 
 @end

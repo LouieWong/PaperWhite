@@ -22,6 +22,10 @@
 {
     return [self colorWithRed:40 green:40 blue:40];
 }
++(UIColor *)customRedColor
+{
+    return [self colorWithRed:168 green:20 blue:3];
+}
 
 +(UIColor *)orangeYellowColor
 {

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "PianKeMainModel.h"
 @interface DetailViewController : UIViewController
-
+@property (nonatomic) PianKeMainModel *pianKeIndexModel;
 @end

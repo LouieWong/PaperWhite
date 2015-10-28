@@ -13,8 +13,16 @@ typedef void(^FailedBlockType)  (NSError *error);
 @interface NetDataEngine : NSObject
 
 + (instancetype)sharedInstance;
-
-- (void)requsetIndexFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock;
-- (void)requsetIndexDetailFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock;
+/**
+ *  片刻首页
+ **/
 - (void)requsetPianKeIndexFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock;
+/**
+ *  片刻首页详情
+ **/
+- (void)requsetPianKeIndexDetailFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock;
+/**
+ *  片刻分类
+ **/
+- (void)requsetPianKeClassifyFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock;
 @end
