@@ -25,4 +25,9 @@ typedef void(^FailedBlockType)  (NSError *error);
  *  片刻分类
  **/
 - (void)requsetPianKeClassifyFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock;
+/**
+ *  片刻分类详情类型
+ **/
+- (void)requsetPianKeClassifyTypeFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock;
+
 @end

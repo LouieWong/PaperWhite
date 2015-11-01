@@ -31,12 +31,13 @@
 @property (nonatomic)NSString *OldWebDataUrl;
 @property (nonatomic)NSDictionary *dataSource;
 @property (nonatomic)UITableView *aTableView;
-@property (nonatomic)PianKeIndexDetailModel  *pianKeIndexDetailModel;
+@property (nonatomic)PianKeDetailModel  *pianKeIndexDetailModel;
 @property (nonatomic)PianKeMainModel *pianKeIndexModel;
 @property (nonatomic)UITableViewCell *oldCell;
 @property (nonatomic)UIButton *oldButton;
 @property (nonatomic)BOOL *isSelected;
 @property (nonatomic)UIScrollView *aScrollView;
+@property (nonatomic)UIImageView *backImageView;
 @end
 
 @implementation RootViewController
@@ -44,7 +45,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    [self config];
     [self fetchData];
     [self fetchClassifyFromServer];
     [self initUI];
@@ -53,9 +54,11 @@
 }
 #pragma mark - 数据处理
 - (void)fetchData {
-       if (![self fetchDataFromLocal]) {
+//       if (![self fetchDataFromLocal]) {
+
+    [self fetchDataFromLocal];
         [self fetchDataFromServer];
-    }
+//    }
 }
 - (void)fetchOldWebData {
 //    if (![self fetchOldWebDataFromLocal]) {
@@ -63,6 +66,50 @@
 //    }
 }
 
+#pragma mark - 读取解析本地数据
+/**
+ *  第一页本地数据
+ **/
+- (BOOL)fetchDataFromLocal
+{
+    if ([CacheManager isCacheDataInvalid:kIndexUrl]) {
+        id lastrespondData = [CacheManager readDataAtUrl:kIndexUrl];
+        
+        [self parseCacheData:lastrespondData];
+        [self.aTableView reloadData];
+        return YES;
+    }
+    
+    return NO;
+}
+- (BOOL)fetchClassifyDataFromLocal
+{
+    if ([CacheManager isCacheDataInvalid:kClassifyListUrl]) {
+        id lastrespondData = [CacheManager readDataAtUrl:kClassifyListUrl];
+        
+        [self parseClassifyCacheData:lastrespondData];
+        [self.aTableView reloadData];
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (void)parseCacheData:(id)respondData
+{
+    //解析数据，刷新表
+    self.dataKey = [NSMutableArray arrayWithArray:[PaseBase pasePianKeListData:respondData]];
+}
+- (void)parseClassifyCacheData:(id)respondData
+{
+    //解析数据，刷新表
+    self.classifyArray = [NSMutableArray arrayWithArray:[PaseBase pasePianKeClassifyData:respondData]];
+    NSLog(@"%@",self.classifyArray);
+    [self refetchClassify];
+}
+/**
+ *  其他页本地数据
+ **/
 - (BOOL)fetchOldWebDataFromLocal
 {
     self.OldWebDataUrl = [NSString stringWithFormat:@"%@&client=2&limit=10&start%d",kIndexUrl,_dataNumber];
@@ -70,30 +117,10 @@
         id respondData = [CacheManager readDataAtUrl:self.OldWebDataUrl];
         [self parseOldCacheData:respondData];
         [self.aTableView reloadData];
-        _dataNumber += 10;
-        return YES;
+//        return YES;
+        return NO;
     }
-    
     return NO;
-
-}
-//读取本地数据
-- (BOOL)fetchDataFromLocal
-{
-    
-    if ([CacheManager isCacheDataInvalid:kIndexUrl]) {
-        id respondData = [CacheManager readDataAtUrl:kIndexUrl];
-        [self parseCacheData:respondData];
-        [self.aTableView reloadData];
-        return YES;
-    }
-    
-    return NO;
-}
-- (void)parseCacheData:(id)respondData
-{
-    //解析数据，刷新表
-    self.dataKey = [NSMutableArray arrayWithArray:[PaseBase pasePianKeListData:respondData]];
 }
 - (void)parseOldCacheData:(id)respondData
 {
@@ -101,19 +128,16 @@
     NSArray *array = [PaseBase pasePianKeListData:respondData];
     [self.dataKey addObjectsFromArray:array];
 }
-#pragma mark - 获取数据
+#pragma mark - 获取数据(AFNetWoring)
 - (void)fetchDataFromServer
 {
     NSString *url = kIndexUrl;
     NSDictionary *dic = @{@"client":@(2),@"limit":@(10),@"start":@(0)};
     [[NetDataEngine sharedInstance]requsetPianKeIndexFrom:url parameters:dic success:^(id responsData) {
        self.dataKey  = [PaseBase pasePianKeListData:responsData];
-//        [self.dataKey removeAllObjects];
-//        [self.dataKey addObjectsFromArray:array];
         [self.aTableView reloadData];
         self.dataNumber = 10;
         NSLog(@"%@",@"从网络获取数据");
-        [CacheManager clearDisk];
         [CacheManager saveData:responsData atUrl:kIndexUrl];
     } failed:^(NSError *error) {
         NSLog(@"网络真差");
@@ -121,43 +145,46 @@
 }
 - (void)fetchClassifyFromServer
 {
-    NSString *classifyUrl = @"http://api2.pianke.me/read/columns?client=2";
-    [[NetDataEngine sharedInstance]requsetPianKeClassifyFrom:classifyUrl parameters:nil success:^(id responsData){
-        
+   
+    [[NetDataEngine sharedInstance]requsetPianKeClassifyFrom:kClassifyListUrl parameters:nil success:^(id responsData){
         NSArray *array = [PaseBase pasePianKeClassifyData:responsData];
-        self.classifyArray = [NSMutableArray array];
+        NSLog(@"%@",array);
         [self.classifyArray addObjectsFromArray:array];
-        for (int i =0; i<array.count; i++) {
-            PiankeClassifyModel *model = [array objectAtIndex:i];
-            NSLog(@"%@",model);
-            UIButton *button = (UIButton*)[self.aScrollView viewWithTag:100+i];
-            UIImageView *aimageView = (UIImageView*)[button viewWithTag:button.tag+100];
-            [aimageView sd_setImageWithURL:[NSURL URLWithString:model.coverimg] placeholderImage:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                UIImage *aimage =[UIImage setBlurImage:aimageView.image quality:0.5 blurred:0.5];
-                aimageView.image = aimage;
-            }];
-            [button setTitle:model.name forState:UIControlStateNormal];
-            button.tag =  [model.type intValue];
-        }
-        NSLog(@"%@",self.classifyArray);
+        NSLog(@"asdfffffffffffffff%@",self.classifyArray);
+        [self refetchClassify];
+        [CacheManager saveData:responsData atUrl:kClassifyListUrl];
     } failed:^(NSError *error) {
-        
+        NSLog(@"获取分类数据失败");
+        [self fetchClassifyDataFromLocal];
     }];
+}
+- (void)refetchClassify
+{
+    NSLog(@"asdfffffffffffffff%@",self.classifyArray);
+    for (int i =0; i<self.classifyArray.count; i++) {
+        PiankeClassifyModel *model = [_classifyArray objectAtIndex:i];
+        UIButton *button = (UIButton*)[self.aScrollView viewWithTag:100+i];
+        UIImageView *aimageView = (UIImageView*)[button viewWithTag:button.tag+100];
+        [aimageView sd_setImageWithURL:[NSURL URLWithString:model.coverimg] placeholderImage:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+            UIImage *aimage =[UIImage setBlurImage:aimageView.image quality:0.5 blurred:0.5];
+            aimageView.image = aimage;
+        }];
+        [button setTitle:model.name forState:UIControlStateNormal];
+        button.tag =  [model.type intValue];
 
+}
 }
 - (void)fetchOldWebDataFromServer
 {
     NSString *url = kIndexUrl;
-    if (_dataNumber == 0) {
-        _dataNumber = 10;
-    }
     NSDictionary *dic = @{@"client":@(2),@"limit":@(10),@"start":@(_dataNumber)};
+    NSLog(@"%d",_dataNumber);
     [[NetDataEngine sharedInstance]requsetPianKeIndexFrom:url parameters:dic success:^(id responsData) {
         NSArray *array = [PaseBase pasePianKeListData:responsData];
         [self.dataKey addObjectsFromArray:array];
         [self.aTableView reloadData];
         _dataNumber += 10;
-        self.OldWebDataUrl = [NSString stringWithFormat:@"%@&client=2&limit=10&start%d",kIndexUrl,_dataNumber];
+        NSLog(@"网络数据的加载");
         [CacheManager saveData:responsData atUrl:self.OldWebDataUrl];
     } failed:^(NSError *error) {
         NSLog(@"网络真差");
@@ -166,26 +193,42 @@
 #pragma mark - 搭建界面
 - (void)initUI
 {
-    self.view.backgroundColor = [UIColor cyanGreenColor];
+//    self.view.backgroundColor = [UIColor cyanGreenColor];
     [self customNav];
     [self createTableView];
     [self createScrollView];
+   }
+- (void)config
+{
+    self.dataNumber = 10;
+    self.view.backgroundColor = [UIColor cyanGreenColor];
+    self.backImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    self.backImageView.contentMode = UIViewContentModeScaleAspectFill;
+    self.backImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    self.backImageView.clipsToBounds  = YES;
+    [self.view addSubview:self.backImageView];
+    UIImage *image = [UIImage setBlurImage:[UIImage imageNamed:@"BackImage"] quality:0.5 blurred:0.9];
+    self.backImageView.image = image;
+    UIColor *backColor = [UIColor colorWithPatternImage:image];
+    self.navigationController.navigationBar.barTintColor = backColor;
+    self.classifyArray = [NSMutableArray array];
 }
-
 - (void)createNav
 {
     self.navigationController.navigationBarHidden = YES;
 }
 - (void)customNav
 {
-    self.navigationController.navigationBar.barTintColor = self.view.backgroundColor;
-    
+//    self.navigationController.navigationBar.barTintColor = self.view.backgroundColor;
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+    self.navigationItem.backBarButtonItem = item;
     PaperButton *button = [PaperButton button];
     [button addTarget:self action:@selector(animateTableView:) forControlEvents:UIControlEventTouchUpInside];
     button.tintColor = [UIColor whiteColor];
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
-    
-    self.navigationItem.rightBarButtonItem = barButton;
+    self.navigationItem.title = @"首页";
+    self.navigationItem.leftBarButtonItem = barButton;
+//    self.navigationController.interactivePopGestureRecognizer.delegate=self;
 }
 - (void)animateTableView:(id)sender
 {
@@ -242,9 +285,11 @@
 {
     UIButton *button = (UIButton*)sender.view;
     if (button.selected == YES) {
-//         NSLog(@"分类");
         ClassifyViewController *controller = [[ClassifyViewController alloc]init];
-        NSLog(@"%ld",button.tag);
+        controller.backImage = self.backImageView.image;
+        controller.type = button.tag;
+        controller.title = button.titleLabel.text;
+        NSLog(@"%@",controller.title);
         [self.navigationController pushViewController:controller animated:YES];
     }
 }
@@ -252,11 +297,7 @@
 {
 
     if (!sender.selected) {
-        NSLog(@"弹出");
         POPSpringAnimation *springAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerPositionY];
-        CGPoint point = sender.layer.position;
-        NSLog(@"%f",point.y);
-        
         springAnimation.toValue =  @(sender.layer.position.y-40);
         springAnimation.springBounciness = 20.0; //弹性速度
         springAnimation.springSpeed = 20.0;
@@ -265,12 +306,10 @@
         sender.selected = YES;
 
     }else{
-        NSLog(@"缩回");
         POPSpringAnimation *springAnimation1 = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerPositionY];
         springAnimation1.toValue =  @(sender.layer.position.y+40);
         springAnimation1.springBounciness = 20.0; //弹性速度
         springAnimation1.springSpeed = 20.0;
-        
         [sender.layer pop_addAnimation:springAnimation1 forKey:@"springAnimation11"];
         sender.selected = NO;
     }
@@ -287,7 +326,6 @@
         
         //结束动画
         [weakSelf.aTableView headerEndRefreshingWithResult:JHRefreshResultSuccess];
-        NSLog(@"缓存%ld",[CacheManager cacheSize]);
 
     }];
 
@@ -299,8 +337,6 @@
     [self.aTableView addRefreshFooterViewWithAniViewClass:[CustomViewAniView class] beginRefresh:^{
         
         [weakSelf fetchOldWebData];
-
-        NSLog(@"缓存%ld",[CacheManager cacheSize]);
         [weakSelf.aTableView footerEndRefreshing];
     }];
 
@@ -308,15 +344,21 @@
 
 #pragma mark - uitableView
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    NSArray *cells = [self.aTableView visibleCells];//当前可视界面中全部的cell数组
-    if (cells.firstObject == self.oldCell) {
+    PianKeListCell *cell = [[self.aTableView visibleCells]firstObject];//当前可视界面中第一个cell
+    
+    if (cell == self.oldCell) {
         return;
     }
     //判断是不是上一个Cell
-    self.oldCell = cells[0];//当前界面中第一个
+    self.oldCell = cell;//当前界面中第一个
     self.tmpColor = [UIColor randomcolor];
-    self.view.backgroundColor = _tmpColor;
-    self.navigationController.navigationBar.barTintColor = _tmpColor;
+//    self.view.backgroundColor = _tmpColor;
+    UIImage *image = [UIImage setBlurImage:cell.indexImageView.image quality:0.2 blurred:0.6] ;
+    UIColor *backcolor = [UIColor colorWithPatternImage:image];
+//    self.view.backgroundColor = backcolor;
+    self.backImageView.image = image;
+//    self.navigationController.navigationBar.barTintColor = _tmpColor;
+    self.navigationController.navigationBar.barTintColor = backcolor;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -338,6 +380,7 @@
     DetailViewController *detail = [[DetailViewController alloc]init];
     PianKeMainModel *model = self.dataKey[indexPath.row];
     detail.pianKeIndexModel = model;
+    detail.backImage = self.backImageView.image;
     [self.navigationController pushViewController:detail animated:YES];
 }
 - (void)didReceiveMemoryWarning {
@@ -349,14 +392,14 @@
         self.dataKey = [NSMutableArray array];
         
     }
-    return _dataKey;
+    return self.dataKey;
 }
-//- (NSMutableArray*)classifyArray
-//{
-//    if (self.classifyArray == nil ) {
-//        _classifyArray = [NSMutableArray array];
-//        
-//    }
-//    return _classifyArray;
-//}
+- (NSMutableArray*)classifyArray
+{
+    if (_classifyArray == nil ) {
+        _classifyArray = [NSMutableArray array];
+        
+    }
+    return _classifyArray;
+}
 @end

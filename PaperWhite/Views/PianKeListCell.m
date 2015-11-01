@@ -19,14 +19,19 @@
     self.contentView.backgroundColor = [UIColor clearColor];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self setTransform:CGAffineTransformMakeRotation(M_PI/2)];
+    self.Contents.font = [UIFont fontWithName:@"Avenir-Medium"
+                                         size:14];
+    self.Title.font = [UIFont fontWithName:@"Avenir-Medium"
+                                         size:20];
 }
 - (void)updateModel:(PianKeMainModel*)pianKeMainModel
 {
-
-    [self.indexImageView sd_setImageWithURL:[NSURL URLWithString:pianKeMainModel.coverimg] placeholderImage:[UIImage imageNamed:@"Placehold.png"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-        
-    }];
-    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.indexImageView sd_setImageWithURL:[NSURL URLWithString:pianKeMainModel.coverimg] placeholderImage:[UIImage imageNamed:@"Placehold.png"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+            
+        }];
+    });
+   
     self.Title.text = pianKeMainModel.title;
     self.Contents.text = pianKeMainModel.content;
     NSString *str = [NSString stringWithFormat:@"%@·%@",pianKeMainModel.name,pianKeMainModel.enname];

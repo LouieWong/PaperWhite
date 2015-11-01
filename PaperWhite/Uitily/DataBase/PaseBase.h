@@ -17,10 +17,14 @@
 /**
  *  解析详情页数据
  **/
-+ (NSMutableArray *)pasePianKeListDetailData:(id)data;
++ (NSMutableArray *)pasePianKeDetailData:(id)data;
 /**
  *  解析分类数据
  **/
 + (NSMutableArray *)pasePianKeClassifyData:(id)data;
+/**
+ *  解析分类列表数据
+ **/
++ (NSMutableArray *)pasePianKeClassifyListData:(id)data;
 
 @end

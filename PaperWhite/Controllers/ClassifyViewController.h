@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface ClassifyViewController : UIViewController
-
+@property (nonatomic) NSInteger type;
+@property (nonatomic) UIImage *backImage;
+@property (nonatomic,copy) NSString *title;
 @end

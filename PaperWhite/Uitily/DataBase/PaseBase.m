@@ -27,11 +27,11 @@
     }
     return marr;
 }
-+ (NSMutableArray *)pasePianKeListDetailData:(id)data
++ (NSMutableArray *)pasePianKeDetailData:(id)data
 {
     NSDictionary *dict = [data objectForKey:@"data"];
     NSMutableArray *marr = [NSMutableArray array];
-    PianKeIndexDetailModel  *model =[[PianKeIndexDetailModel alloc]initWithDictionary:dict error:nil];
+    PianKeDetailModel  *model =[[PianKeDetailModel alloc]initWithDictionary:dict error:nil];
     [marr addObject:model];
     return marr;
     
@@ -47,5 +47,23 @@
     }
     return marr;
 }
++ (NSMutableArray *)pasePianKeClassifyListData:(id)data
+{
+    NSDictionary *dict = [data objectForKey:@"data"];
+    NSArray *list = [dict objectForKey:@"list"];
+    NSMutableArray *marr = [NSMutableArray array];
+    for (NSDictionary *obj in list) {
+        PianKeMainModel *model = [[PianKeMainModel alloc]initWithDictionary:obj error:nil];
+        if (![model.name isEqualToString:@"音乐"]) {
+            if (![model.name isEqualToString:@"Ting"]) {
+                [marr addObject:model];
+            }
+            
+        }
+        
+    }
+    return marr;
+}
+
 
 @end

@@ -103,5 +103,12 @@
     [self startNetDataEngine];
     [self get:url parameters:paramenters success:successBlock failed:failedBlock];
 }
+- (void)requsetPianKeClassifyTypeFrom:(NSString *)url parameters:paramenters success:(SuccessBlockType)successBlock failed:(FailedBlockType)failedBlock
+{
+    self.failedBlock = failedBlock;
+    [self startNetDataEngine];
+    [self post:url parameters:paramenters success:successBlock failed:failedBlock];
+
+}
 
 @end

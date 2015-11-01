@@ -11,13 +11,15 @@
 #import "PaseBase.h"
 #import <POP.h>
 #import "DetailWebView.h"
+#import "PaperButton.h"
+#import "UMSocial.h"
 @interface DetailViewController ()<UIWebViewDelegate>
 
 @property (nonatomic) DetailWebView *aWebView;
-@property (nonatomic) PianKeIndexDetailModel *pianKeIndexDetailModel;
-
-
-@property (nonatomic)NSArray *dataKey;
+@property (nonatomic) PianKeDetailModel *pianKeIndexDetailModel;
+@property (nonatomic) UIImageView *backImageView;
+@property (nonatomic) NSArray *dataKey;
+@property (nonatomic) PianKeDetailShareModel *pianKeDetailShareModel;
 
 @end
 
@@ -25,10 +27,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self config];
     [self initUI];
     [self fetchData];
     
 }
+#pragma mark - 友盟
+- (void)share
+{
+    
+    [UMSocialSnsService presentSnsIconSheetView:self
+                                         appKey:@"561c7d51e0f55ac520001b94"
+                                      shareText:[NSString stringWithFormat:@"我推荐了这篇文章:%@ \n%@\n %@",self.pianKeDetailShareModel.title,self.pianKeDetailShareModel.text, self.pianKeDetailShareModel.url]
+                                     shareImage:self.pianKeDetailShareModel.pic
+                                shareToSnsNames:[NSArray arrayWithObjects:UMShareToSina,UMShareToDouban,UMShareToRenren,nil]
+                                       delegate:self];
+    
+}
+
 #pragma mark - UIWebView
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
@@ -55,12 +71,28 @@
 {
     NSString *url = @"http://pianke.image.alimmdn.com/css/module.css?v=8292";
     [self.aWebView loadHTMLString:str baseURL:[NSURL URLWithString:url]];
+//    [self.aWebView loadHTMLString:@"http://pianke.me/webview/5628fae95e7743526f8b4629" baseURL:[NSURL URLWithString:@"http://pianke.me/webview/5628fae95e7743526f8b4629"]];
 }
+
 #pragma mark - 搭建UI
+- (void)config
+{
+    self.view.backgroundColor = [UIColor cyanGreenColor];
+    self.backImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    self.backImageView.contentMode = UIViewContentModeScaleAspectFill;
+    self.backImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    self.backImageView.clipsToBounds  = YES;
+//    self.backImageView.backgroundColor = self.navigationController.navigationBar.barTintColor;
+    [self.view addSubview:self.backImageView];
+    self.backImageView.image = self.backImage;
+    
+}
+
 - (void)initUI
 {
     [self createUIWebView];
-    self.view.backgroundColor = self.navigationController.navigationBar.barTintColor;
+//    self.view.backgroundColor = self.navigationController.navigationBar.barTintColor;
+    [self customNav];
 }
 - (void)createUIWebView
 {
@@ -68,8 +100,27 @@
     _aWebView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-64);
     _aWebView.backgroundColor = self.navigationController.navigationBar.barTintColor;
     _aWebView.delegate = self;
+    [[[_aWebView subviews]objectAtIndex:0]setBounces:NO];
     [self.view addSubview:_aWebView];
 }
+- (void)customNav
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+    self.navigationItem.backBarButtonItem = item;
+    
+    
+    PaperButton *button = [PaperButton button];
+    [button addTarget:self action:@selector(animateTableView:) forControlEvents:UIControlEventTouchUpInside];
+    button.tintColor = [UIColor whiteColor];
+    UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+    
+    self.navigationItem.rightBarButtonItem = barButton;
+}
+- (void)animateTableView:(id)sender
+{
+    
+}
+
 #pragma mark - 获取数据
 - (void)fetchData {
     if (![self fetchDataFromLocal]) {
@@ -85,8 +136,11 @@
     NSDictionary *dic = @{@"contentid":self.pianKeIndexModel.id,@"limit":@(2)};
     
     [[NetDataEngine sharedInstance]requsetPianKeIndexDetailFrom:url parameters:dic success:^(id responsData) {
-        self.dataKey = [PaseBase pasePianKeListDetailData:responsData];
-        PianKeIndexDetailModel *model = self.dataKey[0];
+        NSLog(@"%@",responsData);
+        self.dataKey = [PaseBase pasePianKeDetailData:responsData];
+        PianKeDetailModel *model = self.dataKey[0];
+        self.pianKeDetailShareModel = model.shareinfo;
+        NSLog(@"%@",self.pianKeIndexDetailModel);
         [self loadString:model.html];
     } failed:^(NSError *error) {
         

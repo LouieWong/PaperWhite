@@ -46,7 +46,7 @@
 + (void)saveData:(id)object atUrl:(NSString*)url{
     //首先得到保存的文件路径
     NSString *fileFullPath = [self cacheFileFullPath:url];
-
+    NSLog(@"路径%@",fileFullPath);
     //写入数据,使用NSKeyedArchiver进行数据转换
     NSData *data = [NSKeyedArchiver  archivedDataWithRootObject:object];
     [data writeToFile:fileFullPath atomically:YES];

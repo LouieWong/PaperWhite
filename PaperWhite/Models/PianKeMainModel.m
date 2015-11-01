@@ -13,13 +13,19 @@
     return YES;//JSONModel提供给我们的接口，有了它等于给所有属性加了<option>
 }
 @end
-@implementation PianKeIndexDetailModel
+@implementation PianKeDetailModel
 +(BOOL)propertyIsOptional:(NSString *)propertyName{
     return YES;//JSONModel提供给我们的接口，有了它等于给所有属性加了<option>
 }
 @end
 
 @implementation PiankeClassifyModel
++(BOOL)propertyIsOptional:(NSString *)propertyName{
+    return YES;//JSONModel提供给我们的接口，有了它等于给所有属性加了<option>
+}
+@end
+
+@implementation PianKeClassifyListModel
 +(BOOL)propertyIsOptional:(NSString *)propertyName{
     return YES;//JSONModel提供给我们的接口，有了它等于给所有属性加了<option>
 }

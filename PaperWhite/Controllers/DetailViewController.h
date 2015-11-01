@@ -10,4 +10,5 @@
 #import "PianKeMainModel.h"
 @interface DetailViewController : UIViewController
 @property (nonatomic) PianKeMainModel *pianKeIndexModel;
+@property (nonatomic) UIImage *backImage;
 @end
