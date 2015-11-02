@@ -16,6 +16,7 @@
 #import "CacheManager.h"
 #import "JHRefresh.h"
 #import "PaperButton.h"
+#import <SVProgressHUD.h>
 @interface ClassifyViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property (nonatomic) UIColor *tmpColor;
 @property (nonatomic) UITableView *aTableView;
@@ -166,11 +167,14 @@
 {
     NSString *url = kClassifyUrl;
     NSDictionary *dic = @{@"sort":@"addtime",@"start":@(0),@"client":@(2),@"typeid":@(self.type),@"limit":@(10)};
+    [SVProgressHUD showWithStatus:@"加载中"];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeGradient];
     [[NetDataEngine sharedInstance]requsetPianKeClassifyTypeFrom:url parameters:dic success:^(id responsData) {
         self.dataNewDataArray = [PaseBase pasePianKeClassifyListData:responsData];
         [CacheManager saveData:responsData atUrl:self.NewWebDataUrl];
         NSLog(@"这是网络数据");
         [self.aTableView reloadData];
+        [SVProgressHUD dismiss];
     } failed:^(NSError *error) {
         
     }];
@@ -188,12 +192,14 @@
     }
     NSString *url = [NSString stringWithFormat:@"http://api2.pianke.me/read/columns_detail"];
     NSDictionary *dic = @{@"sort":@"addtime",@"start":@(_dataNumber),@"client":@(2),@"typeid":@(self.type),@"limit":@(10)};
-   
+    [SVProgressHUD showWithStatus:@"加载中"];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeGradient];
     [[NetDataEngine sharedInstance]requsetPianKeClassifyTypeFrom:url parameters:dic success:^(id responsData) {
         NSArray *array = [PaseBase pasePianKeClassifyListData:responsData];
         [self.dataNewDataArray addObjectsFromArray:array];
         _dataNumber += 10;
         [self.aTableView reloadData];
+        [SVProgressHUD dismiss];
         self.OldWebDataUrl = [NSString stringWithFormat:@"%@&client=2&limit=10&start=%d$typeid=%ld",url,_dataNumber,self.type];
 
         [CacheManager saveData:responsData atUrl:self.OldWebDataUrl];

@@ -10,9 +10,10 @@
 #import "NetDataEngine.h"
 #import "PaseBase.h"
 #import <POP.h>
+#import <SVProgressHUD.h>
 #import "DetailWebView.h"
 #import "PaperButton.h"
-#import "UMSocial.h"
+//#import "UMSocial.h"
 @interface DetailViewController ()<UIWebViewDelegate>
 
 @property (nonatomic) DetailWebView *aWebView;
@@ -33,17 +34,17 @@
     
 }
 #pragma mark - 友盟
-- (void)share
-{
-    
-    [UMSocialSnsService presentSnsIconSheetView:self
-                                         appKey:@"561c7d51e0f55ac520001b94"
-                                      shareText:[NSString stringWithFormat:@"我推荐了这篇文章:%@ \n%@\n %@",self.pianKeDetailShareModel.title,self.pianKeDetailShareModel.text, self.pianKeDetailShareModel.url]
-                                     shareImage:self.pianKeDetailShareModel.pic
-                                shareToSnsNames:[NSArray arrayWithObjects:UMShareToSina,UMShareToDouban,UMShareToRenren,nil]
-                                       delegate:self];
-    
-}
+//- (void)share
+//{
+//    
+//    [UMSocialSnsService presentSnsIconSheetView:self
+//                                         appKey:@"561c7d51e0f55ac520001b94"
+//                                      shareText:[NSString stringWithFormat:@"我推荐了这篇文章:%@ \n%@\n %@",self.pianKeDetailShareModel.title,self.pianKeDetailShareModel.text, self.pianKeDetailShareModel.url]
+//                                     shareImage:self.pianKeDetailShareModel.pic
+//                                shareToSnsNames:[NSArray arrayWithObjects:UMShareToSina,UMShareToDouban,UMShareToRenren,nil]
+//                                       delegate:self];
+//    
+//}
 
 #pragma mark - UIWebView
 - (void)webViewDidFinishLoad:(UIWebView *)webView
@@ -134,6 +135,8 @@
 {
     NSString *url = @"http://api2.pianke.me/article/info";
     NSDictionary *dic = @{@"contentid":self.pianKeIndexModel.id,@"limit":@(2)};
+    [SVProgressHUD showWithStatus:@"加载中"];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeGradient];
     
     [[NetDataEngine sharedInstance]requsetPianKeIndexDetailFrom:url parameters:dic success:^(id responsData) {
         NSLog(@"%@",responsData);
@@ -142,6 +145,7 @@
         self.pianKeDetailShareModel = model.shareinfo;
         NSLog(@"%@",self.pianKeIndexDetailModel);
         [self loadString:model.html];
+        [SVProgressHUD dismiss];
     } failed:^(NSError *error) {
         
     }];

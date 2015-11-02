@@ -14,7 +14,7 @@
 #import "NetDataEngine.h"
 #import "PaseBase.h"
 #import "UIImage+Blur.h"
-#import <MBProgressHUD.h>
+#import <SVProgressHUD.h>
 #import "JHRefresh.h"
 #import "DetailViewController.h"
 #import "CacheManager.h"
@@ -133,11 +133,14 @@
 {
     NSString *url = kIndexUrl;
     NSDictionary *dic = @{@"client":@(2),@"limit":@(10),@"start":@(0)};
+    [SVProgressHUD showWithStatus:@"加载中"];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeGradient];
     [[NetDataEngine sharedInstance]requsetPianKeIndexFrom:url parameters:dic success:^(id responsData) {
        self.dataKey  = [PaseBase pasePianKeListData:responsData];
         [self.aTableView reloadData];
         self.dataNumber = 10;
         NSLog(@"%@",@"从网络获取数据");
+        [SVProgressHUD dismissWithDelay:0.5];
         [CacheManager saveData:responsData atUrl:kIndexUrl];
     } failed:^(NSError *error) {
         NSLog(@"网络真差");
@@ -145,7 +148,8 @@
 }
 - (void)fetchClassifyFromServer
 {
-   
+    [SVProgressHUD showWithStatus:@"加载中"];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeGradient];
     [[NetDataEngine sharedInstance]requsetPianKeClassifyFrom:kClassifyListUrl parameters:nil success:^(id responsData){
         NSArray *array = [PaseBase pasePianKeClassifyData:responsData];
         NSLog(@"%@",array);
@@ -153,6 +157,7 @@
         NSLog(@"asdfffffffffffffff%@",self.classifyArray);
         [self refetchClassify];
         [CacheManager saveData:responsData atUrl:kClassifyListUrl];
+        [SVProgressHUD dismissWithDelay:0.5];
     } failed:^(NSError *error) {
         NSLog(@"获取分类数据失败");
         [self fetchClassifyDataFromLocal];
@@ -179,6 +184,8 @@
     NSString *url = kIndexUrl;
     NSDictionary *dic = @{@"client":@(2),@"limit":@(10),@"start":@(_dataNumber)};
     NSLog(@"%d",_dataNumber);
+    [SVProgressHUD showWithStatus:@"加载中"];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeGradient];
     [[NetDataEngine sharedInstance]requsetPianKeIndexFrom:url parameters:dic success:^(id responsData) {
         NSArray *array = [PaseBase pasePianKeListData:responsData];
         [self.dataKey addObjectsFromArray:array];
@@ -186,6 +193,7 @@
         _dataNumber += 10;
         NSLog(@"网络数据的加载");
         [CacheManager saveData:responsData atUrl:self.OldWebDataUrl];
+        [SVProgressHUD dismissWithDelay:0.5];
     } failed:^(NSError *error) {
         NSLog(@"网络真差");
     }];
@@ -326,6 +334,8 @@
         
         //结束动画
         [weakSelf.aTableView headerEndRefreshingWithResult:JHRefreshResultSuccess];
+        
+        
 
     }];
 

@@ -1,6 +1,6 @@
 pod 'pop', '~>1.0'
 
-pod 'MBProgressHUD','~>0.9.1'
+#pod 'MBProgressHUD','~>0.9.1'
 
 platform :ios, '7.0'
 pod "AFNetworking", "~> 2.0"
@@ -14,6 +14,8 @@ pod 'JSONModel'
 platform :ios, '6.1'
 pod 'SDWebImage', '~>3.7'
 
-pod 'AAPullToRefresh'
+#pod 'AAPullToRefresh'
 
-pod 'MJRefresh'
+#pod 'MJRefresh'
+
+pod 'SVProgressHUD', :head
