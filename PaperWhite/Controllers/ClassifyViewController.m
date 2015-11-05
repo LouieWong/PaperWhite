@@ -25,7 +25,6 @@
 @property (nonatomic,copy) NSString *NewWebDataUrl;
 @property (nonatomic) NSMutableArray *dataNewDataArray;
 @property (nonatomic) UIImageView *backImageView;
-
 @end
 
 @implementation ClassifyViewController
@@ -60,7 +59,10 @@
 {
 
     [self createTableView];
-    [self customNav];
+//    [self customNav];
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+    self.navigationItem.title = self.title;
+    self.navigationItem.backBarButtonItem = item;
 }
 - (void)createTableView
 {
@@ -192,7 +194,7 @@
     }
     NSString *url = [NSString stringWithFormat:@"http://api2.pianke.me/read/columns_detail"];
     NSDictionary *dic = @{@"sort":@"addtime",@"start":@(_dataNumber),@"client":@(2),@"typeid":@(self.type),@"limit":@(10)};
-    [SVProgressHUD showWithStatus:@"加载中"];
+    [SVProgressHUD showInfoWithStatus:@"加载中"];
     [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeGradient];
     [[NetDataEngine sharedInstance]requsetPianKeClassifyTypeFrom:url parameters:dic success:^(id responsData) {
         NSArray *array = [PaseBase pasePianKeClassifyListData:responsData];

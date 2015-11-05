@@ -7,7 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+@protocol PulldownMentuDelegate
+- (void)menuitemSelected:(NSIndexPath*)indexPath;
+- (void)pullDownAnimated:(BOOL)open;
+@end
+@interface SettingViewController : UITableViewController<UITableViewDataSource,UITableViewDelegate>
+{
+    id<PulldownMentuDelegate>pulldelegate;
+}
+@property (nonatomic, retain) id<PulldownMentuDelegate> pulldelegate;
+@property (nonatomic,strong) NSMutableArray *tableViewArray;
+@property (nonatomic,strong) NSString *cellString;
 
-@interface SettingViewController : UITableViewController
-
+-(NSString *) cellString;
 @end

@@ -20,6 +20,8 @@
 #import "CacheManager.h"
 #import "ScrollButton.h"
 #import "ClassifyViewController.h"
+#import "SettingController.h"
+#import "SettingViewController.h"
 @interface RootViewController ()<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate>
 @property (nonatomic)UIColor *tmpColor;
 @property (nonatomic)UICollectionView *aCollectionView;
@@ -38,6 +40,8 @@
 @property (nonatomic)BOOL *isSelected;
 @property (nonatomic)UIScrollView *aScrollView;
 @property (nonatomic)UIImageView *backImageView;
+@property (nonatomic)BOOL *isOpened;
+@property (nonatomic)SettingViewController *setting;
 @end
 
 @implementation RootViewController
@@ -56,7 +60,7 @@
 - (void)fetchData {
 //       if (![self fetchDataFromLocal]) {
 
-    [self fetchDataFromLocal];
+//    [self fetchDataFromLocal];
         [self fetchDataFromServer];
 //    }
 }
@@ -144,6 +148,8 @@
         [CacheManager saveData:responsData atUrl:kIndexUrl];
     } failed:^(NSError *error) {
         NSLog(@"网络真差");
+        [SVProgressHUD dismissWithDelay:0.5];
+//        [self fetchDataFromLocal];
     }];
 }
 - (void)fetchClassifyFromServer
@@ -202,7 +208,10 @@
 - (void)initUI
 {
 //    self.view.backgroundColor = [UIColor cyanGreenColor];
-    [self customNav];
+//    [self customNav];
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+    self.navigationItem.title = @"首页";
+    self.navigationItem.backBarButtonItem = item;
     [self createTableView];
     [self createScrollView];
    }
@@ -220,10 +229,22 @@
     UIColor *backColor = [UIColor colorWithPatternImage:image];
     self.navigationController.navigationBar.barTintColor = backColor;
     self.classifyArray = [NSMutableArray array];
+    self.isOpened = NO;
 }
 - (void)createNav
 {
     self.navigationController.navigationBarHidden = YES;
+    if (_setting == nil) {
+        self.setting = [[SettingViewController alloc]init];
+    }
+    _setting.view.frame = CGRectMake(150,64, 165, 120);
+    [self addChildViewController:_setting];
+    [self.view addSubview:_setting.view];
+    _setting.pulldelegate = self;
+    [_setting.view setHidden:YES];
+
+    
+    
 }
 - (void)customNav
 {
@@ -240,7 +261,26 @@
 }
 - (void)animateTableView:(id)sender
 {
-    
+//        if (_isOpened)
+//        {
+//            [self hidePop];
+//            return;
+//        }
+//        _isOpened = YES;
+//        POPSpringAnimation *positionAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+//        positionAnimation.fromValue = [NSValue valueWithCGRect:CGRectZero];
+//        positionAnimation.toValue = [NSValue valueWithCGRect:CGRectMake(0, 0, 200, 100)]; positionAnimation.springBounciness = 15.0f;
+//        positionAnimation.springSpeed = 20.0f;
+//        [_popView pop_addAnimation:positionAnimation forKey:@"frameAnimation"];
+}
+- (void)hidePop
+{
+//        POPBasicAnimation *positionAnimation = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
+//        positionAnimation.fromValue = [NSValue valueWithCGRect:CGRectMake(0, 0, 200, 100)];
+//        positionAnimation.toValue = [NSValue valueWithCGRect:CGRectZero];
+//        //key一样就会用后面的动画覆盖之前的
+//        [_popView pop_addAnimation:positionAnimation forKey:@"frameAnimation"];
+//        _isOpened = NO;
 }
 - (void)createTableView
 {

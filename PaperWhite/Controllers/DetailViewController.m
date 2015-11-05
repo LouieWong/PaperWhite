@@ -21,7 +21,7 @@
 @property (nonatomic) UIImageView *backImageView;
 @property (nonatomic) NSArray *dataKey;
 @property (nonatomic) PianKeDetailShareModel *pianKeDetailShareModel;
-
+@property (nonatomic) BOOL isOpened;
 @end
 
 @implementation DetailViewController
@@ -33,7 +33,7 @@
     [self fetchData];
     
 }
-#pragma mark - 友盟
+//#pragma mark - 友盟
 //- (void)share
 //{
 //    
@@ -86,6 +86,9 @@
 //    self.backImageView.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:self.backImageView];
     self.backImageView.image = self.backImage;
+    self.isOpened = NO;
+    
+    
     
 }
 
@@ -93,8 +96,12 @@
 {
     [self createUIWebView];
 //    self.view.backgroundColor = self.navigationController.navigationBar.barTintColor;
-    [self customNav];
+//    [self customNav];
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+    self.navigationItem.backBarButtonItem = item;
+
 }
+
 - (void)createUIWebView
 {
     self.aWebView = [DetailWebView UIWebView];
@@ -116,10 +123,28 @@
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
     
     self.navigationItem.rightBarButtonItem = barButton;
+    
+    
 }
 - (void)animateTableView:(id)sender
 {
-    
+//    if (_isOpened) { [self hidePop];
+//        return;
+//    } _isOpened = YES;
+//    POPSpringAnimation *positionAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+//    positionAnimation.fromValue = [NSValue valueWithCGRect:CGRectZero];
+//    positionAnimation.toValue = [NSValue valueWithCGRect:CGRectMake(0, 0, 200, 100)]; positionAnimation.springBounciness = 15.0f;
+//    positionAnimation.springSpeed = 20.0f;
+//    [_popView pop_addAnimation:positionAnimation forKey:@"frameAnimation"];
+}
+- (void)hidePop
+{
+//    POPBasicAnimation *positionAnimation = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
+//    positionAnimation.fromValue = [NSValue valueWithCGRect:CGRectMake(0, 0, 200, 100)];
+//    positionAnimation.toValue = [NSValue valueWithCGRect:CGRectZero];
+//    //key一样就会用后面的动画覆盖之前的
+//    [_popView pop_addAnimation:positionAnimation forKey:@"frameAnimation"];
+//    _isOpened = NO;
 }
 
 #pragma mark - 获取数据
